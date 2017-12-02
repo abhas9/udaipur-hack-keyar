@@ -52,6 +52,7 @@
             android:text="@string/patient_id_name"
             android:textSize="24sp"/>
         <EditText
+            android:id="@+id/idEditText"
             android:background="@drawable/primary_border_white_background"
             android:layout_marginTop="@dimen/vertical_margin"
             android:padding="@dimen/edit_text_padding"
@@ -59,6 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <Button
+            android:id="@+id/admitButton"
             android:layout_marginTop="@dimen/vertical_margin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

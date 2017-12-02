@@ -9,11 +9,16 @@ import android.graphics.Color;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
+
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import in.janitri.keyar.model.Patient;
 import in.janitri.keyarhardware.KeyarCallback;
 import in.janitri.keyarhardware.KeyarData;
 import in.janitri.keyarhardware.KeyarDevice;
@@ -25,6 +30,9 @@ public class HomeActivity extends AppCompatActivity {
     private Activity activity;
     private final int MY_PERMISSIONS_REQUEST = 1;
     private FrameLayout addPatientFrameLayout;
+    private RecyclerView patientRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private PatientAdapter patientAdapter;
     private KeyarCallback keyarCallback = new KeyarCallback() {
         @Override
         public void onData(KeyarData keyarData) {
@@ -33,18 +41,29 @@ public class HomeActivity extends AppCompatActivity {
 
         @Override
         public void onError(String error) {
+            SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE);;
             switch (error) {
                 case ERROR_PERMISSION:
                     ActivityCompat.requestPermissions(activity,
                             new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             MY_PERMISSIONS_REQUEST);
                     break;
-                case ERROR_BLUETOOTH_OFF:
-                    SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE);
+                case ERROR_DEVICE_NOT_FOUND:
                     pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-                    pDialog.setTitleText("Your Bluetooth is off. Please turn on your bluetooth to use Keyar");
+                    pDialog.setTitleText("Keyar not found");
+                    pDialog.setContentText("Please make sure that Keyar device is on");
                     pDialog.setCancelable(true);
                     pDialog.show();
+                    patientAdapter.setReadingData(false);
+                    break;
+                case ERROR_BLUETOOTH_OFF:
+                    pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                    pDialog.setTitleText("Turn on your Bluetooth.");
+                    pDialog.setCancelable(true);
+                    pDialog.show();
+                    patientAdapter.setReadingData(false);
+                    break;
+
 
             }
             Log.e(LOG_TAG, error);
@@ -52,6 +71,38 @@ public class HomeActivity extends AppCompatActivity {
 
         @Override
         public void onMessage(String message) {
+            SweetAlertDialog pDialog;
+            switch (message) {
+                case MESSAGE_CONNECTION_FAIL:
+                    pDialog = new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE);
+                    pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                    pDialog.setTitleText("Keyar not found");
+                    pDialog.setContentText("Please make sure that Keyar device is on");
+                    pDialog.setCancelable(true);
+                    pDialog.show();
+                    patientAdapter.setReadingData(false);
+                    break;
+                case MESSAGE_CONNECTION_SUCCESS:
+                    pDialog = new SweetAlertDialog(activity, SweetAlertDialog.SUCCESS_TYPE);
+                    pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                    pDialog.setTitleText("Keyar connected");
+                    pDialog.setContentText("Keyar connected successfully");
+                    pDialog.setCancelable(true);
+                    pDialog.show();
+                    break;
+                case MESSAGE_READ_DATA_FAIL:
+                    pDialog = new SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE);
+                    pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                    pDialog.setTitleText("Keyar disconnected");
+                    pDialog.setContentText("Keyar device is now disconnected or turned off");
+                    pDialog.setCancelable(true);
+                    pDialog.show();
+                    patientAdapter.setReadingData(false);
+                    break;
+                case MESSAGE_READ_DATA_START:
+                    patientAdapter.setReadingData(true);
+                    break;
+            }
 //            Handle
 //            static String MESSAGE_CONNECTION_SUCCESS = "service_get_socket_ok";
 //            static String MESSAGE_CONNECTION_FAIL = "service_get_socket_fail";
@@ -70,14 +121,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         activity = this;
         setContentView(R.layout.activity_home);
-        keyarDevice = KeyarDevice.getInstance(this);
-        keyarDevice.setKeyarCallback(keyarCallback);
-        keyarDevice.connectDevice();
         initLayout();
     }
 
     void initLayout() {
         addPatientFrameLayout = (FrameLayout) findViewById(R.id.addPatientFrameLayout);
+        patientRecyclerView = (RecyclerView) findViewById(R.id.patientRecyclerView);
         final Context context = this;
         addPatientFrameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +135,33 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        patientRecyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(context);
+        patientRecyclerView.setLayoutManager(mLayoutManager);
+
+        // specify an adapter
+        patientAdapter = new PatientAdapter(context);
+        patientRecyclerView.setAdapter(patientAdapter);
+
+        refreshLayout();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshLayout();
+    }
+
+    private void refreshLayout() {
+        ArrayList<Patient> patients = Patient.getAllPatients();
+        patientAdapter.replacePatients(patients);
+        keyarDevice = KeyarDevice.getInstance(this);
+        keyarDevice.setKeyarCallback(keyarCallback);
+        keyarDevice.connectDevice();
     }
 
     @Override

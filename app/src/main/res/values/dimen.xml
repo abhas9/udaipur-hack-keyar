@@ -8,4 +8,5 @@
     <dimen name="horizontal_margin">8dp</dimen>
     <dimen name="edit_text_padding">5dp</dimen>
     <dimen name="edit_text_size">24sp</dimen>
+    <dimen name="patient_card_padding">8dp</dimen>
 </resources>

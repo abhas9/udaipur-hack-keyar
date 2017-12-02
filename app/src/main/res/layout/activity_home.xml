@@ -41,4 +41,17 @@
 
     </LinearLayout>
 
+    <Button
+        android:text="Connect Device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/patientRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:padding="@dimen/vertical_margin">
+    </android.support.v7.widget.RecyclerView>
+
 </LinearLayout>

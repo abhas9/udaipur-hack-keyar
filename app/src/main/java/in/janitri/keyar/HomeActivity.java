@@ -3,11 +3,13 @@ package in.janitri.keyar;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import in.janitri.keyarhardware.KeyarCallback;
 import in.janitri.keyarhardware.KeyarData;
 import in.janitri.keyarhardware.KeyarDevice;
@@ -32,6 +34,12 @@ public class HomeActivity extends AppCompatActivity {
                             new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             MY_PERMISSIONS_REQUEST);
                     break;
+                case ERROR_BLUETOOTH_OFF:
+                    SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE);
+                    pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                    pDialog.setTitleText("Your Bluetooth is off. Please turn on your bluetooth to use Keyar");
+                    pDialog.setCancelable(true);
+                    pDialog.show();
 
             }
             Log.e(LOG_TAG, error);
@@ -44,6 +52,10 @@ public class HomeActivity extends AppCompatActivity {
 //            static String MESSAGE_CONNECTION_FAIL = "service_get_socket_fail";
 //            static String MESSAGE_READ_DATA_FAIL = "service_read_data_fail"; // When device is switched off
 //            static String MESSAGE_READ_DATA_START = "read_data_start";
+
+//            static String ERROR_BLUETOOTH_OFF = "bluetooth_off";
+//            static String ERROR_DEVICE_NOT_FOUND = "device_not_found";
+//            static String ERROR_PERMISSION = "error_permission";
 
             Log.i(LOG_TAG, message);
         }

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Keyar</string>
     <string name="add_patient">NEW ADMISSION</string>
+    <string name="patient_id_name">PCTS ID</string>
+    <string name="add_patient_button">ADMIN</string>
 </resources>
+

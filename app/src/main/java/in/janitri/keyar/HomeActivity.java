@@ -2,12 +2,16 @@ package in.janitri.keyar;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import in.janitri.keyarhardware.KeyarCallback;
@@ -20,6 +24,7 @@ public class HomeActivity extends AppCompatActivity {
     private KeyarDevice keyarDevice;
     private Activity activity;
     private final int MY_PERMISSIONS_REQUEST = 1;
+    private FrameLayout addPatientFrameLayout;
     private KeyarCallback keyarCallback = new KeyarCallback() {
         @Override
         public void onData(KeyarData keyarData) {
@@ -68,6 +73,19 @@ public class HomeActivity extends AppCompatActivity {
         keyarDevice = KeyarDevice.getInstance(this);
         keyarDevice.setKeyarCallback(keyarCallback);
         keyarDevice.connectDevice();
+        initLayout();
+    }
+
+    void initLayout() {
+        addPatientFrameLayout = (FrameLayout) findViewById(R.id.addPatientFrameLayout);
+        final Context context = this;
+        addPatientFrameLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, AdmissionActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

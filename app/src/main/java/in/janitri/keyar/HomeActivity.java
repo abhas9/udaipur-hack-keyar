@@ -13,8 +13,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
@@ -36,10 +39,18 @@ public class HomeActivity extends AppCompatActivity {
     private PatientAdapter patientAdapter;
     private Button connectDeviceButton;
     private SweetAlertDialog connectingDialog;
+    private WebView tocoWebView;
+
+    private FrameLayout patientListFrameLayout;
+    private FrameLayout patientDataFrameLayout;
+
     private KeyarCallback keyarCallback = new KeyarCallback() {
         @Override
         public void onData(KeyarData keyarData) {
             Log.i(LOG_TAG, keyarData.toString());
+            tocoWebView.loadUrl("javascript:addData("+ System.currentTimeMillis() + "," + keyarData.getToco() + ")");
+            patientListFrameLayout.setVisibility(View.GONE);
+            patientDataFrameLayout.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -137,6 +148,10 @@ public class HomeActivity extends AppCompatActivity {
         connectDeviceButton = (Button) findViewById(R.id.connectDeviceButton);
         addPatientFrameLayout = (FrameLayout) findViewById(R.id.addPatientFrameLayout);
         patientRecyclerView = (RecyclerView) findViewById(R.id.patientRecyclerView);
+
+        patientListFrameLayout  = (FrameLayout) findViewById(R.id.patientListFrameLayout);
+        patientDataFrameLayout  = (FrameLayout) findViewById(R.id.patientDataFrameLayout);;
+
         final Context context = this;
         addPatientFrameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,6 +170,14 @@ public class HomeActivity extends AppCompatActivity {
         // specify an adapter
         patientAdapter = new PatientAdapter(context);
         patientRecyclerView.setAdapter(patientAdapter);
+
+        tocoWebView = new WebView(this);
+        WebSettings webSettings = tocoWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        WebView.setWebContentsDebuggingEnabled(true);
+        tocoWebView.loadUrl("file:///android_asset/www/realtime.html");
+        LinearLayout fhrGraphLinearLayout = (LinearLayout) findViewById(R.id.fhrGraphLinearLayout);
+        fhrGraphLinearLayout.addView(tocoWebView);
 
         refreshLayout();
 
@@ -188,6 +211,8 @@ public class HomeActivity extends AppCompatActivity {
                 connectDeviceButton.setVisibility(View.GONE);
             }
         });
+
+
     }
 
     @Override

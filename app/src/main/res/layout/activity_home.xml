@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,49 +10,79 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/topbar_height"
-        android:orientation="horizontal"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
         <FrameLayout
-            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:padding="@dimen/logo_padding">
+
             <ImageView
-                android:src="@drawable/daksh_white"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:src="@drawable/daksh_white"/>
         </FrameLayout>
+
         <FrameLayout
             android:id="@+id/addPatientFrameLayout"
-            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:padding="@dimen/topbar_text_padding">
+
             <TextView
-                android:text="@string/add_patient"
-                android:textColor="@color/colorWhite"
-                android:layout_gravity="right|center"
-                android:textAlignment="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="right|center"
+                android:text="@string/add_patient"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite"
                 android:textSize="@dimen/topbar_text_size"/>
         </FrameLayout>
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/connectDeviceButton"
-        style="?android:attr/borderlessButtonStyle"
-        android:text="Connect Device"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/patientRecyclerView"
+    <FrameLayout
+        android:id="@+id/patientListFrameLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/vertical_margin"
-        android:padding="@dimen/vertical_margin">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/connectDeviceButton"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Connect Device"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/patientRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/vertical_margin"
+                android:padding="@dimen/vertical_margin">
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:id="@+id/patientDataFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/fhrGraphLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </LinearLayout>

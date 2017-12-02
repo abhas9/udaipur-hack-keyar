@@ -48,6 +48,10 @@ public class HomeActivity extends AppCompatActivity {
     private FrameLayout patientListFrameLayout;
     private FrameLayout patientDataFrameLayout;
 
+    private boolean alertShown = false;
+
+    private ArrayList<KeyarData> keyarDatas = new ArrayList<>();
+
     private OnDeviceAttached onDeviceAttached = new OnDeviceAttached() {
         @Override
         public void deviceAttached(String patientId) {
@@ -66,6 +70,23 @@ public class HomeActivity extends AppCompatActivity {
             tocoWebView.loadUrl("javascript:addData("+ System.currentTimeMillis() + "," + keyarData.getToco() + ")");
             fhrWebView.loadUrl("javascript:addData("+ System.currentTimeMillis() + "," + keyarData.getFhr() + ")");
             fhrTextView.setText("FHR: " + keyarData.getFhr() + " bpm");
+            keyarDatas.add(keyarData);
+            if (keyarDatas.size() > 5 & !alertShown) {
+                double fhrAverage = 0;
+                for (int i = keyarDatas.size() - 1; i > keyarDatas.size() - 5; i--) {
+                    fhrAverage += keyarDatas.get(i).getFhr();
+                }
+                fhrAverage /= 5;
+                if (fhrAverage > 100) {
+                    SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE);
+                    pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                    pDialog.setTitleText("FHR is high");
+                    pDialog.setContentText("Fetal heart rate above normal");
+                    pDialog.setCancelable(true);
+                    pDialog.show();
+                    alertShown = true;
+                }
+            }
         }
 
         @Override
@@ -127,6 +148,7 @@ public class HomeActivity extends AppCompatActivity {
                     pDialog.setContentText("Keyar connected successfully");
                     pDialog.setCancelable(true);
                     pDialog.show();
+                    keyarDatas.clear();
                     break;
                 case MESSAGE_READ_DATA_FAIL:
                     pDialog = new SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE);
@@ -143,6 +165,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case MESSAGE_READ_DATA_START:
                     patientAdapter.setReadingData(true);
+                    keyarDatas.clear();
                     break;
             }
 //            Handle

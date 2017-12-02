@@ -21,6 +21,7 @@ public class AdmissionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admission);
         admitButton = (Button) findViewById(R.id.admitButton);
         idEditText = (EditText) findViewById(R.id.idEditText);
+
         final Context context = this;
         admitButton.setOnClickListener(new View.OnClickListener() {
             @Override

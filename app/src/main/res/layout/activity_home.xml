@@ -42,6 +42,8 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/connectDeviceButton"
+        style="?android:attr/borderlessButtonStyle"
         android:text="Connect Device"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

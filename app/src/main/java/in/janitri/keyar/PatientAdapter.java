@@ -34,6 +34,10 @@ public class PatientAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
+    public boolean getReadingData() {
+        return readingData;
+    }
+
     public void setAttachedToPatientId(String patientId) {
         this.attachedToPatientId = patientId;
         notifyDataSetChanged();

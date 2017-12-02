@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ public class HomeActivity extends AppCompatActivity {
     private RecyclerView patientRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private PatientAdapter patientAdapter;
+    private Button connectDeviceButton;
+    private SweetAlertDialog connectingDialog;
     private KeyarCallback keyarCallback = new KeyarCallback() {
         @Override
         public void onData(KeyarData keyarData) {
@@ -44,11 +47,14 @@ public class HomeActivity extends AppCompatActivity {
             SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE);;
             switch (error) {
                 case ERROR_PERMISSION:
+                    connectingDialog.dismissWithAnimation();
                     ActivityCompat.requestPermissions(activity,
                             new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             MY_PERMISSIONS_REQUEST);
+
                     break;
                 case ERROR_DEVICE_NOT_FOUND:
+                    connectingDialog.dismissWithAnimation();
                     pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
                     pDialog.setTitleText("Keyar not found");
                     pDialog.setContentText("Please make sure that Keyar device is on");
@@ -57,6 +63,7 @@ public class HomeActivity extends AppCompatActivity {
                     patientAdapter.setReadingData(false);
                     break;
                 case ERROR_BLUETOOTH_OFF:
+                    connectingDialog.dismissWithAnimation();
                     pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
                     pDialog.setTitleText("Turn on your Bluetooth.");
                     pDialog.setCancelable(true);
@@ -83,6 +90,7 @@ public class HomeActivity extends AppCompatActivity {
                     patientAdapter.setReadingData(false);
                     break;
                 case MESSAGE_CONNECTION_SUCCESS:
+                    connectingDialog.dismissWithAnimation();
                     pDialog = new SweetAlertDialog(activity, SweetAlertDialog.SUCCESS_TYPE);
                     pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
                     pDialog.setTitleText("Keyar connected");
@@ -98,6 +106,7 @@ public class HomeActivity extends AppCompatActivity {
                     pDialog.setCancelable(true);
                     pDialog.show();
                     patientAdapter.setReadingData(false);
+                    // connectDeviceButton.setVisibility(View.VISIBLE);
                     break;
                 case MESSAGE_READ_DATA_START:
                     patientAdapter.setReadingData(true);
@@ -125,6 +134,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     void initLayout() {
+        connectDeviceButton = (Button) findViewById(R.id.connectDeviceButton);
         addPatientFrameLayout = (FrameLayout) findViewById(R.id.addPatientFrameLayout);
         patientRecyclerView = (RecyclerView) findViewById(R.id.patientRecyclerView);
         final Context context = this;
@@ -161,7 +171,23 @@ public class HomeActivity extends AppCompatActivity {
         patientAdapter.replacePatients(patients);
         keyarDevice = KeyarDevice.getInstance(this);
         keyarDevice.setKeyarCallback(keyarCallback);
-        keyarDevice.connectDevice();
+
+        if (patientAdapter.getReadingData()) {
+            connectDeviceButton.setVisibility(View.GONE);
+        }
+
+        connectDeviceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                keyarDevice.connectDevice();
+                connectingDialog = new SweetAlertDialog(activity, SweetAlertDialog.PROGRESS_TYPE);
+                connectingDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+                connectingDialog.setTitleText("Searching for device");
+                connectingDialog.setCancelable(false);
+                connectingDialog.show();
+                connectDeviceButton.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override

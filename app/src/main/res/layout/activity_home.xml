@@ -48,10 +48,12 @@
         android:id="@+id/patientListFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <Button
                 android:id="@+id/connectDeviceButton"
                 style="?android:attr/borderlessButtonStyle"
@@ -76,10 +78,25 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/fhrGraphLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="match_parent"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/tocoGraphLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/fhrGraphLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:orientation="vertical">
+            </LinearLayout>
+
 
         </LinearLayout>
 

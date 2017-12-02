@@ -40,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
     private Button connectDeviceButton;
     private SweetAlertDialog connectingDialog;
     private WebView tocoWebView;
+    private WebView fhrWebView;
 
     private FrameLayout patientListFrameLayout;
     private FrameLayout patientDataFrameLayout;
@@ -49,6 +50,7 @@ public class HomeActivity extends AppCompatActivity {
         public void onData(KeyarData keyarData) {
             Log.i(LOG_TAG, keyarData.toString());
             tocoWebView.loadUrl("javascript:addData("+ System.currentTimeMillis() + "," + keyarData.getToco() + ")");
+            fhrWebView.loadUrl("javascript:addData("+ System.currentTimeMillis() + "," + keyarData.getFhr() + ")");
             patientListFrameLayout.setVisibility(View.GONE);
             patientDataFrameLayout.setVisibility(View.VISIBLE);
         }
@@ -59,6 +61,7 @@ public class HomeActivity extends AppCompatActivity {
             switch (error) {
                 case ERROR_PERMISSION:
                     connectingDialog.dismissWithAnimation();
+                    connectDeviceButton.setVisibility(View.VISIBLE);
                     ActivityCompat.requestPermissions(activity,
                             new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             MY_PERMISSIONS_REQUEST);
@@ -66,6 +69,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case ERROR_DEVICE_NOT_FOUND:
                     connectingDialog.dismissWithAnimation();
+                    connectDeviceButton.setVisibility(View.VISIBLE);
                     pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
                     pDialog.setTitleText("Keyar not found");
                     pDialog.setContentText("Please make sure that Keyar device is on");
@@ -75,6 +79,7 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case ERROR_BLUETOOTH_OFF:
                     connectingDialog.dismissWithAnimation();
+                    connectDeviceButton.setVisibility(View.VISIBLE);
                     pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
                     pDialog.setTitleText("Turn on your Bluetooth.");
                     pDialog.setCancelable(true);
@@ -92,6 +97,7 @@ public class HomeActivity extends AppCompatActivity {
             SweetAlertDialog pDialog;
             switch (message) {
                 case MESSAGE_CONNECTION_FAIL:
+                    connectingDialog.dismissWithAnimation();
                     pDialog = new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE);
                     pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
                     pDialog.setTitleText("Keyar not found");
@@ -121,6 +127,8 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case MESSAGE_READ_DATA_START:
                     patientAdapter.setReadingData(true);
+                    tocoWebView.loadUrl( "javascript:initChart(\"TOCO\")");
+                    fhrWebView.loadUrl( "javascript:initChart(\"FHR\")");
                     break;
             }
 //            Handle
@@ -171,13 +179,24 @@ public class HomeActivity extends AppCompatActivity {
         patientAdapter = new PatientAdapter(context);
         patientRecyclerView.setAdapter(patientAdapter);
 
-        tocoWebView = new WebView(this);
-        WebSettings webSettings = tocoWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+        WebSettings webSettings;
         WebView.setWebContentsDebuggingEnabled(true);
+        tocoWebView = new WebView(this);
+        webSettings = tocoWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
         tocoWebView.loadUrl("file:///android_asset/www/realtime.html");
+        LinearLayout tocoGraphLinearLayout = (LinearLayout) findViewById(R.id.tocoGraphLinearLayout);
+        tocoGraphLinearLayout.addView(tocoWebView);
+        tocoWebView.loadUrl( "javascript:initChart(\"TOCO\")");
+
+        fhrWebView = new WebView(this);
+        webSettings = fhrWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        fhrWebView.loadUrl("file:///android_asset/www/realtime.html");
         LinearLayout fhrGraphLinearLayout = (LinearLayout) findViewById(R.id.fhrGraphLinearLayout);
-        fhrGraphLinearLayout.addView(tocoWebView);
+        fhrGraphLinearLayout.addView(fhrWebView);
+        fhrWebView.loadUrl( "javascript:initChart(\"FHR\")");
 
         refreshLayout();
 

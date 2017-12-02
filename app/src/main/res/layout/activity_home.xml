@@ -76,30 +76,42 @@
         android:id="@+id/patientDataFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
+            android:layout_height="match_parent">
             <LinearLayout
-                android:id="@+id/tocoGraphLinearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
+                <TextView
+                    android:id="@+id/idTextView"
+                    android:textSize="22sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:id="@+id/tocoGraphLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+                <TextView
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:id="@+id/fhrTextView"
+                    android:textSize="22sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:id="@+id/fhrGraphLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:orientation="vertical">
+                </LinearLayout>
+
 
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/fhrGraphLinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:orientation="vertical">
-            </LinearLayout>
-
-
-        </LinearLayout>
-
+        </ScrollView>
     </FrameLayout>
 
 </LinearLayout>

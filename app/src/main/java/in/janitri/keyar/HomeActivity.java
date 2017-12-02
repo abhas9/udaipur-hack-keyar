@@ -18,6 +18,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -41,9 +42,22 @@ public class HomeActivity extends AppCompatActivity {
     private SweetAlertDialog connectingDialog;
     private WebView tocoWebView;
     private WebView fhrWebView;
+    private TextView idTextView;
+    private TextView fhrTextView;
 
     private FrameLayout patientListFrameLayout;
     private FrameLayout patientDataFrameLayout;
+
+    private OnDeviceAttached onDeviceAttached = new OnDeviceAttached() {
+        @Override
+        public void deviceAttached(String patientId) {
+            tocoWebView.loadUrl( "javascript:initChart(\"TOCO\")");
+            fhrWebView.loadUrl( "javascript:initChart(\"FHR\")");
+            patientListFrameLayout.setVisibility(View.GONE);
+            patientDataFrameLayout.setVisibility(View.VISIBLE);
+            idTextView.setText(patientId.toUpperCase());
+        }
+    };
 
     private KeyarCallback keyarCallback = new KeyarCallback() {
         @Override
@@ -51,8 +65,7 @@ public class HomeActivity extends AppCompatActivity {
             Log.i(LOG_TAG, keyarData.toString());
             tocoWebView.loadUrl("javascript:addData("+ System.currentTimeMillis() + "," + keyarData.getToco() + ")");
             fhrWebView.loadUrl("javascript:addData("+ System.currentTimeMillis() + "," + keyarData.getFhr() + ")");
-            patientListFrameLayout.setVisibility(View.GONE);
-            patientDataFrameLayout.setVisibility(View.VISIBLE);
+            fhrTextView.setText("FHR: " + keyarData.getFhr() + " bpm");
         }
 
         @Override
@@ -123,12 +136,13 @@ public class HomeActivity extends AppCompatActivity {
                     pDialog.setCancelable(true);
                     pDialog.show();
                     patientAdapter.setReadingData(false);
-                    // connectDeviceButton.setVisibility(View.VISIBLE);
+                    patientListFrameLayout.setVisibility(View.VISIBLE);
+                    patientDataFrameLayout.setVisibility(View.GONE);
+                    connectDeviceButton.setVisibility(View.VISIBLE);
+
                     break;
                 case MESSAGE_READ_DATA_START:
                     patientAdapter.setReadingData(true);
-                    tocoWebView.loadUrl( "javascript:initChart(\"TOCO\")");
-                    fhrWebView.loadUrl( "javascript:initChart(\"FHR\")");
                     break;
             }
 //            Handle
@@ -158,7 +172,9 @@ public class HomeActivity extends AppCompatActivity {
         patientRecyclerView = (RecyclerView) findViewById(R.id.patientRecyclerView);
 
         patientListFrameLayout  = (FrameLayout) findViewById(R.id.patientListFrameLayout);
-        patientDataFrameLayout  = (FrameLayout) findViewById(R.id.patientDataFrameLayout);;
+        patientDataFrameLayout  = (FrameLayout) findViewById(R.id.patientDataFrameLayout);
+        idTextView = (TextView) findViewById(R.id.idTextView);
+        fhrTextView = (TextView) findViewById(R.id.fhrTextView);
 
         final Context context = this;
         addPatientFrameLayout.setOnClickListener(new View.OnClickListener() {
@@ -178,6 +194,7 @@ public class HomeActivity extends AppCompatActivity {
         // specify an adapter
         patientAdapter = new PatientAdapter(context);
         patientRecyclerView.setAdapter(patientAdapter);
+        patientAdapter.setOnDeviceAttached(onDeviceAttached);
 
         WebSettings webSettings;
         WebView.setWebContentsDebuggingEnabled(true);

@@ -21,6 +21,11 @@ public class PatientAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     ArrayList<Patient> patients;
     private boolean readingData;
     private String attachedToPatientId;
+    private OnDeviceAttached onDeviceAttached;
+
+    public void setOnDeviceAttached(OnDeviceAttached onDeviceAttached) {
+        this.onDeviceAttached = onDeviceAttached;
+    }
 
     public PatientAdapter(Context c) {
         this.c = c;
@@ -58,7 +63,7 @@ public class PatientAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof PatientsHolder) {
             Patient patient = patients.get(position);
-            ((PatientsHolder) holder).initializeFromPatient(patient);
+            ((PatientsHolder) holder).initializeFromPatient(patient, onDeviceAttached);
         }
     }
     @Override
@@ -76,13 +81,21 @@ public class PatientAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             attachDeviceButton = itemView.findViewById(R.id.attachDeviceButton);
         }
 
-        public void initializeFromPatient(final Patient patient) {
+        public void initializeFromPatient(final Patient patient, final OnDeviceAttached onDeviceAttached) {
             idTextView.setText(patient.getId().toUpperCase());
             if (readingData) {
                 attachDeviceButton.setVisibility(View.VISIBLE);
             } else {
                 attachDeviceButton.setVisibility(View.GONE);
             }
+            attachDeviceButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (onDeviceAttached != null) {
+                        onDeviceAttached.deviceAttached(patient.getId());
+                    }
+                }
+            });
         }
     }
 

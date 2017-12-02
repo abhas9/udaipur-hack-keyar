@@ -60,6 +60,7 @@ public class HomeActivity extends AppCompatActivity {
             patientListFrameLayout.setVisibility(View.GONE);
             patientDataFrameLayout.setVisibility(View.VISIBLE);
             idTextView.setText(patientId.toUpperCase());
+            patientAdapter.setAttachedToPatientId(patientId);
         }
     };
 
@@ -70,14 +71,17 @@ public class HomeActivity extends AppCompatActivity {
             tocoWebView.loadUrl("javascript:addData("+ System.currentTimeMillis() + "," + keyarData.getToco() + ")");
             fhrWebView.loadUrl("javascript:addData("+ System.currentTimeMillis() + "," + keyarData.getFhr() + ")");
             fhrTextView.setText("FHR: " + keyarData.getFhr() + " bpm");
-            keyarDatas.add(keyarData);
+            if (!patientAdapter.getAttachedToPatientId().equals("")) {
+                keyarDatas.add(keyarData);
+            }
             if (keyarDatas.size() > 5 & !alertShown) {
                 double fhrAverage = 0;
                 for (int i = keyarDatas.size() - 1; i > keyarDatas.size() - 5; i--) {
                     fhrAverage += keyarDatas.get(i).getFhr();
                 }
                 fhrAverage /= 5;
-                if (fhrAverage > 100) {
+                fhrAverage = keyarData.getFhr();
+                if (fhrAverage > 120) {
                     SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE);
                     pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
                     pDialog.setTitleText("FHR is high");
@@ -85,6 +89,8 @@ public class HomeActivity extends AppCompatActivity {
                     pDialog.setCancelable(true);
                     pDialog.show();
                     alertShown = true;
+                    Intent i = new Intent(getApplicationContext(), AlertSound.class);
+                    startService(i);
                 }
             }
         }
@@ -94,7 +100,9 @@ public class HomeActivity extends AppCompatActivity {
             SweetAlertDialog pDialog = new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE);;
             switch (error) {
                 case ERROR_PERMISSION:
-                    connectingDialog.dismissWithAnimation();
+                    if (connectingDialog != null) {
+                        connectingDialog.dismissWithAnimation();
+                    }
                     connectDeviceButton.setVisibility(View.VISIBLE);
                     ActivityCompat.requestPermissions(activity,
                             new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -132,10 +140,11 @@ public class HomeActivity extends AppCompatActivity {
             switch (message) {
                 case MESSAGE_CONNECTION_FAIL:
                     connectingDialog.dismissWithAnimation();
+                    connectDeviceButton.setVisibility(View.VISIBLE);
                     pDialog = new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE);
                     pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
                     pDialog.setTitleText("Keyar not found");
-                    pDialog.setContentText("Please make sure that Keyar device is on");
+                    pDialog.setContentText("Please try again");
                     pDialog.setCancelable(true);
                     pDialog.show();
                     patientAdapter.setReadingData(false);
@@ -291,6 +300,17 @@ public class HomeActivity extends AppCompatActivity {
                 return;
             }
 
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (patientDataFrameLayout.getVisibility() == View.VISIBLE) {
+            patientDataFrameLayout.setVisibility(View.GONE);
+            patientListFrameLayout.setVisibility(View.VISIBLE);
+            alertShown = false;
+        } else {
+            super.onBackPressed();
         }
     }
 }

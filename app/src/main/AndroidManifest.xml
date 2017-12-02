@@ -25,6 +25,10 @@
             android:name=".AdmissionActivity"
             android:screenOrientation="portrait">
         </activity>
+        <service
+            android:name=".AlertSound"
+            android:enabled="true"
+            android:exported="false"/>
     </application>
 
 </manifest>

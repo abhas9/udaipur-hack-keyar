@@ -1,18 +1,5 @@
-function randomData() {
-    now = new Date(+now + oneDay);
-    value = Math.random() * 200;
-    return {
-        time: now, value: value
-    }
-}
-
 var data = [];
-var now = new Date();
-var oneDay = 1000;
-var value = Math.random() * 200;
-//for (var i = 0; i < 1000; i++) {
-//    data.push(randomData());
-//}
+
 var myChart;
 document.addEventListener("DOMContentLoaded", function() {
     initChart('TOCO');
@@ -43,7 +30,7 @@ function initChart(name) {
                   type: 'time',
                   boundaryGap: [0, 1],
                   min: new Date().getTime(),
-                  max: new Date().getTime() + 60 * 10 * 1000,
+                  max: new Date().getTime() + 60 * 1 * 1000,
               },
               yAxis: {
                   type: 'value',
